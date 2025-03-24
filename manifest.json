@@ -1,0 +1,8 @@
+{
+  "name": "Dexcom G7 Plugin",
+  "slug": "dexcom-g7",
+  "description": "Open source plugin for trmnl to show Dexcom G7 glucose data",
+  "author": "Your Name",
+  "version": "0.1.0",
+  "private": false
+}
