@@ -26,17 +26,24 @@ async function getSessionId(): Promise<string> {
   }
 }
 
-function generateMockData(): any {
+function generateMockData(count = 24) {
   const now = Date.now();
-  const value = Math.floor(Math.random() * 100) + 80;
-  const trend = Math.floor(Math.random()*9);
+  const readings = [];
 
-  return [{
-        Value: value,
-        Trend: trend,
-        DT: `/Date(${now})/`
-      }];
+  for (let i = 0; i < count; i++) {
+    const timestamp = now - (i * 60 * 60 * 1000); // 1 hour apart
+    const value = 80 + Math.floor(Math.random() * 100); // 80–180
+    const trend = Math.floor(Math.random()*9);
+    readings.unshift({
+      Value: value,
+      Trend: trend,
+      DT: `/Date(${timestamp})/`
+    });
+  }
+
+  return readings;
 }
+
 
 export async function getDexcomData() {
   if(process.env.USE_MOCK_DATA === 'true') {
