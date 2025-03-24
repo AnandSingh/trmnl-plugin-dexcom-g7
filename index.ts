@@ -11,6 +11,7 @@ function parseDexcomTime(dt: string): string {
 
 export default async function render() {
   const data = await getDexcomData();
+  console.log("Data Received", data);
 
   if (!data || data.length === 0) {
     return "❌ No glucose data available.";
@@ -23,3 +24,5 @@ export default async function render() {
 
   return `🩸 Glucose: ${value} mg/dL\n🕒 Time: ${time}\nStatus: ${status}`;
 }
+
+render().then(console.log).catch(console.error);

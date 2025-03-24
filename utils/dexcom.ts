@@ -19,7 +19,6 @@ async function getSessionId(): Promise<string> {
         'User-Agent': 'Dexcom Share/3.0.2.11',
         'Content-Type': 'application/json',
     }});
-
     return response.data;
   } catch (err: any) {
     console.error('Dexcom login failed:', err.response?.data || err.message);
@@ -27,8 +26,28 @@ async function getSessionId(): Promise<string> {
   }
 }
 
+function generateMockData(): any {
+  const now = Date.now();
+  const value = Math.floor(Math.random() * 100) + 80;
+  const trend = Math.floor(Math.random()*9);
+
+  return [{
+        Value: value,
+        Trend: trend,
+        DT: `/Date(${now})/`
+      }];
+}
+
 export async function getDexcomData() {
+  if(process.env.USE_MOCK_DATA === 'true') {
+    console.log(" Mock mode enabled, Returing simulated glucose data ...")
+    return generateMockData();
+  }
+  if (!process.env.DEXCOM_USERNAME || !process.env.DEXCOM_PASSWORD) {
+    throw new Error('Missing Dexcom username or password.');
+  }
   const sessionId = await getSessionId();
+  console.log('Dexcom session ID:', sessionId);
 
   const url = `${DEXCOM_BASE_URL}/Publisher/ReadPublisherLatestGlucoseValues`;
   try {
@@ -40,10 +59,10 @@ export async function getDexcomData() {
       params: {
         sessionId,
         minutes: 1440,
-        maxCount: 1,
+        maxCount: 10,
       },
     });
-
+    console.log('Dexcom data fetch succeeded:', response.data);
     return response.data;
   } catch (err: any) {
     console.error('Dexcom data fetch failed:', err.response?.data || err.message);
