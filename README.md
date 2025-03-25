@@ -3,7 +3,7 @@
 This plugin displays real-time or mock Dexcom G7 glucose data in your [TRMNL](https://usetrmnl.com) dashboard using their **Custom Plugin API** and webhook strategy.
 
 <p align="center">
-  <img src="./assets/screenshot.png" width="500"/>
+  <img src="./assets/trmnl_screen.png" width="500"/>
 </p>
 
 It supports:
