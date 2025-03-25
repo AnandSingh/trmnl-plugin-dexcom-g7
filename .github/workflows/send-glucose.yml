@@ -1,0 +1,30 @@
+name: Send Glucose Data to TRMNL
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"  # every 10 minutes
+  workflow_dispatch:
+
+jobs:
+  send-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run plugin sender
+        env:
+          TRMNL_API_KEY: ${{ secrets.TRMNL_API_KEY }}
+          TRMNL_PLUGIN_ID: ${{ secrets.TRMNL_PLUGIN_ID }}
+        run: |
+          echo "USE_MOCK_DATA=true" > .env
+          python send_to_trmnl.py
+
