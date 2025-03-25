@@ -1,26 +1,32 @@
-# Dexcom G7 Plugin for trmnl 🩸
+# Dexcom G7 Plugin for TRMNL 🩸
 
-An open-source plugin for [trmnl](https://usetrmnl.com) that fetches glucose data from the **Dexcom G7** via the **Dexcom Share API** and displays:
+This plugin displays real-time or mock Dexcom G7 glucose data in your [TRMNL](https://usetrmnl.com) dashboard using their **Custom Plugin API** and webhook strategy.
 
-- ✅ Real-time glucose values
-- ✅ Time of last reading
-- ✅ Status indicator (🟢/🔴/⚠️)
-- ✅ 24-hour ASCII glucose trend chart
-- ✅ Offline mock data mode for testing
-
----
-
-## 📦 Features
-
-- 🌐 **Live mode**: Uses real Dexcom credentials via the Share API
-- 🧪 **Mock mode**: Fully testable with realistic simulated glucose data
-- 📊 **Trend chart**: Terminal-friendly ASCII graph of 24-hour history
+It supports:
+- ✅ Real-time glucose readings via Dexcom Share API (planned)
+- ✅ Fully offline mock mode for development & testing
+- ✅ ASCII 24-hour glucose chart (auto-generated)
+- ✅ Python or TypeScript-based data push
+- ✅ Liquid/HTML dashboard rendering
 
 ---
 
-## 🔧 Setup Instructions
+## 📦 Project Structure
 
-### 1. Clone the plugin
+```
+trmnl-plugin-dexcom-g7/
+├── main.ts                 # Webhook sender using TypeScript + axios
+├── send_to_trmnl.py        # Python version of the webhook sender
+├── template.html.liquid    # Renders dashboard display
+├── .env.example            # API keys and config
+├── README.md
+```
+
+---
+
+## 🛠️ Setup Instructions
+
+### 1. Clone the Plugin
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/trmnl-plugin-dexcom-g7.git
@@ -28,124 +34,85 @@ cd trmnl-plugin-dexcom-g7
 npm install
 ```
 
+Install Python deps (if using Python):
+
+```bash
+pip install -r requirements.txt
+```
+
 ---
 
-### 2. Create the `.env` file
+### 2. Create the `.env` File
 
 ```bash
 cp .env.example .env
 ```
 
-Then fill it out:
+Then add:
 
-```env
-DEXCOM_USERNAME=your_dexcom_username
-DEXCOM_PASSWORD=your_dexcom_password
+```
+TRMNL_API_KEY=your_actual_trmnl_api_key
+TRMNL_PLUGIN_ID=your_plugin_id_from_trmnl
 USE_MOCK_DATA=true
 ```
 
-Set `USE_MOCK_DATA=false` to connect to Dexcom servers.
+---
+
+### 3. Add the Dashboard Template
+
+In your [TRMNL dashboard](https://usetrmnl.com):
+
+1. Go to: **Plugins → Private Plugin → Your Plugin**
+2. Paste contents of `template.html.liquid` into the **Markup** or **Template** field
+3. Save
 
 ---
 
-### 3. Run the plugin locally (for development)
+### 4. Send Data (Choose one)
+
+#### Option A: TypeScript
 
 ```bash
-npx ts-node index.ts
+npx ts-node main.ts
 ```
 
-Expected output:
+#### Option B: Python
+
+```bash
+python send_to_trmnl.py
+```
+
+---
+
+### ✅ Output in TRMNL
 
 ```
-📈 24h Glucose Trend (mg/dL)
-▃▃▄▅▅▆▆▇▇█▆▅▄▃▃▂▁▂▃▄▅▆▆▇
-
 🩸 Glucose: 145 mg/dL
-🕒 Time: 3/24/2025, 10:45:00 PM
+📈 Chart: ▂▃▄▅▆▇█▇▆▅▄▃▂▁▂▃▅▆
+🕒 Time: 2025-03-24 23:45:00
 Status: 🟢 Normal
 ```
 
 ---
 
-## 🧪 Mock Mode (for offline testing)
+## 🔮 Future Features
 
-Mock mode is enabled by setting:
-
-```env
-USE_MOCK_DATA=true
-```
-
-It generates 24 hourly readings for chart rendering and random status values. Useful for demo, development, and no-Dexcom scenarios.
-
----
-
-## 📂 File Structure
-
-```
-trmnl-plugin-dexcom-g7/
-├── index.ts             # Main plugin render logic
-├── manifest.json        # Plugin metadata
-├── utils/
-│   └── dexcom.ts        # Dexcom Share API + mock data
-├── .env.example         # Template for credentials
-├── .gitignore
-└── README.md
-```
+- [ ] Dexcom Share live API integration
+- [ ] Auto-push when new data is available
+- [ ] Trend arrows (↗️, ↘️, ➖)
+- [ ] Alert logic for high/low readings
+- [ ] GitHub Action-based cron trigger
+- [ ] Device association from TRMNL dashboard
+- [ ] ASCII + Unicode graph visual options
 
 ---
 
-## 🧪 Testing in trmnl (online)
+## 🧪 Development Mode
 
-1. Push this plugin to your GitHub:
-   ```
-   https://github.com/YOUR_USERNAME/trmnl-plugin-dexcom-g7
-   ```
-
-2. Log in to [https://usetrmnl.com](https://usetrmnl.com)
-
-3. Navigate to:
-   - `Settings → Plugins` or
-   - `Customize → Add Plugin`
-
-4. Add your GitHub repo URL. trmnl will read `manifest.json` and load your plugin.
-
-⚠️ You may need a Pro account or plugin developer access to use external plugins.
-
----
-
-## 💬 Output Format
-
-```
-📈 24h Glucose Trend (mg/dL)
-▃▄▅▆▇█▇▆▅▄▃▂▁▂▃▄▅▆▇
-
-🩸 Glucose: 152 mg/dL
-🕒 Time: 3/24/2025, 9:00 PM
-Status: 🟢 Normal
-```
-
----
-
-## 🔐 Notes on Dexcom Share API
-
-- This plugin uses the **unofficial** Dexcom Share API used by the mobile app
-- Requires Share to be enabled in your Dexcom G6/G7 app
-- No developer key needed (uses `applicationId` fingerprint)
-
----
-
-## ✅ TODO
-
-- [ ] Automatically fallback to mock mode if Dexcom Share login fails
-- [ ] Add trend arrow indicators based on `Trend` field (↗️, ➘, ➖)
-- [ ] Add timestamp labels (08h, 12h, 20h) to the ASCII chart
-- [ ] Add support for non-US Dexcom accounts (`dexcom-server=EU`)
-- [ ] Add in-plugin settings UI (for trmnl integration)
-- [ ] Support `asciichart` or other richer graphing libraries
-- [ ] Add unit tests and offline data validator
+Keep `USE_MOCK_DATA=true` to develop without hitting the Dexcom API.
 
 ---
 
 ## 📄 License
 
-MIT © 2025 Anand Singh
+MIT © 2025 Your Name
