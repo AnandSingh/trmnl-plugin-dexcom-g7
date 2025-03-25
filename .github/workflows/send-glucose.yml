@@ -26,5 +26,5 @@ jobs:
           TRMNL_PLUGIN_ID: ${{ secrets.TRMNL_PLUGIN_ID }}
         run: |
           echo "USE_MOCK_DATA=true" > .env
-          python send_to_trmnl.py
+          python dexcom_to_trmnl.py
 
