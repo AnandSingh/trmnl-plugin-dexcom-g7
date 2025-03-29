@@ -7,7 +7,7 @@ on:
   workflow_dispatch:  # Allow manual trigger
 
 jobs:
-  push-data:
+  send-data:
     runs-on: ubuntu-latest
 
     steps:
