@@ -5,6 +5,7 @@ import requests
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import json
+import pytz
 from mock_data import *
 
 load_dotenv()
@@ -17,6 +18,7 @@ USE_MOCK_DATA = os.getenv("USE_MOCK_DATA", "true").lower() == "true"
 NIGHTSCOUT_URL = os.getenv("NIGHTSCOUT_URL")
 NIGHTSCOUT_API_SECRET = os.getenv("NIGHTSCOUT_API_SECRET", "")
 USE_HASHED_SECRET = True  # replicate behavior of firmware
+TIMEZONE = os.getenv("TIMEZONE", "UTC")  # Default to UTC if not specified
 
 def is_mock_mode():
     """Returns True only if USE_MOCK_DATA is explicitly true/yes/1; otherwise defaults to live."""
@@ -36,6 +38,20 @@ def build_headers():
         headers["api-secret"] = secret
     return headers
 
+def format_timestamp(iso_timestamp: str) -> str:
+    """Converts an ISO timestamp to a localized, readable format."""
+    try:
+        # Parse the ISO timestamp
+        dt = datetime.fromisoformat(iso_timestamp.replace("Z", "+00:00"))
+        
+        # Convert to specified timezone
+        target_tz = pytz.timezone(TIMEZONE)
+        local_dt = dt.astimezone(target_tz)
+        
+        # Format to 'Month Day, Year - HH:MM AM/PM' format for display
+        return local_dt.strftime("%b %d, %Y - %I:%M %p")
+    except ValueError:
+        return iso_timestamp  # Return original if parsing fails
 
 def get_trend_arrow(direction: str) -> str:
     arrows = {
@@ -104,12 +120,12 @@ def get_live_glucose_data():
         values = [r["sgv"] for r in readings if "sgv" in r][:24]
         timestamps = [r["dateString"][:16] for r in readings if "dateString" in r][:24]
         chart_data = [[timestamps[i], values[i]] for i in range(len(values))]
-
+    
         # Prepare data in the format your template expects
         trmnl_data = {
             "glucose": sgv,
             "trend": get_trend_arrow(direction),
-            "time": timestamp,
+            "time": format_timestamp(timestamp),
             "chart_data": chart_data
         }
 

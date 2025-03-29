@@ -6,12 +6,27 @@
 <div class="view view--full">
   <div class="layout layout--col gap--space-between">
 
-    <!-- Display Latest Glucose Reading with Trend Icon and Units (Center-Aligned) -->
-    <div style="text-align: center; margin-bottom: 20px;">
-      <div style="font-size: 3rem; color: #ff0000;">🩸 {{ glucose }} mg/dL</div>
-      <div style="font-size: 1.5rem; color: #00ff00;">{{ trend }}</div>
-      <div style="font-size: 0.9rem; color: #888;">🕒 Last updated: {{ time }}</div>
+    <!-- Info Row (Left: Last updated time, Right: Glucose & Trend) -->
+    <div class="grid grid--cols-3">
+      <div class="item">
+        <div class="meta"></div>
+        <div class="content">
+          <span class="label" style="color: #333; font-size: 0.9rem;">🕒 {{ time }}</span>
+          <span class="label">Last updated</span>
+        </div>
+      </div>
+      <div class="item" style="text-align: center;">
+        <div class="content">
+          <span class="value value--tnums" style="font-size: 2rem; color: #ff0000;">🩸 {{ glucose }} mg/dL</span><br>
+        </div>
+      </div>
+      <div class="item" style="text-align: center;">
+        <div class="content">
+          <span class="value value--tnums" style="font-size: 2rem; color: #444;">{{ trend }}</span>
+        </div>
+      </div>
     </div>
+
 
     <!-- Chart Area -->
     <div id="glucose-chart" style="width: 100%; height: 300px;"></div>
@@ -51,8 +66,8 @@
           yAxis: {
             labels: {
               style: {
-                fontSize: "16px",
-                color:"#00ff00"
+                fontSize: "18px",
+                color:"#ff0000"
               }
             },
             gridLineDashStyle: "shortdot",
