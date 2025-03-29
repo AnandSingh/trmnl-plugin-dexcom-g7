@@ -1,56 +1,90 @@
-<style>
-  .glucose-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 1rem;
-    color: #0ff;
-    font-family: monospace;
-  }
+<!-- import Highcharts + Chartkick libraries -->
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartkick@5.0.1/dist/chartkick.min.js"></script>
 
-  .glucose-value {
-    font-size: 2.5rem;
-    font-weight: bold;
-  }
+<!-- Markup with empty, ID'd element for chart injection -->
+<div class="view view--full">
+  <div class="layout layout--col gap--space-between">
 
-  .glucose-trend {
-    margin-top: 0.5rem;
-    font-size: 1.2rem;
-  }
+    <!-- Display Latest Glucose Reading with Trend Icon and Units (Center-Aligned) -->
+    <div style="text-align: center; margin-bottom: 20px;">
+      <div style="font-size: 3rem; color: #ff0000;">🩸 {{ glucose }} mg/dL</div>
+      <div style="font-size: 1.5rem; color: #00ff00;">{{ trend }}</div>
+      <div style="font-size: 0.9rem; color: #888;">🕒 Last updated: {{ time }}</div>
+    </div>
 
-  .glucose-time {
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
-    color: #888;
-  }
-
-  .glucose-chart {
-    margin-top: 1rem;
-    font-family: monospace;
-    font-size: 1.3rem;
-    color: #0ff;
-    width: 100%;
-    text-align: center;
-    word-wrap: break-word;
-  }
-</style>
-
-<div class="glucose-container">
-  <!-- Top Section: Latest Reading -->
-  <div class="glucose-value">
-    🩸 {{ data.glucose }} mg/dL
+    <!-- Chart Area -->
+    <div id="glucose-chart" style="width: 100%; height: 300px;"></div>
   </div>
 
-  <div class="glucose-trend">
-    {{ data.trend }}
-  </div>
-
-  <div class="glucose-time">
-    🕒 Last updated: {{ data.time }}
-  </div>
-
-  <!-- Bottom Section: Graph -->
-  <div class="glucose-chart">
-    {{ data.chart }}
+  <div class="title_bar">
+    <img class="image" src="https://usetrmnl.com/images/plugins/simple-analytics--render.svg" />
+    <span class="title">Continuous Glucose Monitoring (CGM)</span>
   </div>
 </div>
+
+<script type="text/javascript">
+  var data = {{ chart_data | json | safe }};
+
+  // Recommended configs to achieve the TRMNL Framework aesthetic
+  var createChart = function() {
+    new Chartkick["LineChart"](
+      "glucose-chart",
+      data,
+      {
+        adapter: "highcharts",
+        prefix: "",
+        thousands: ",",
+        points: true,
+        colors: ["black"],
+        curve: true,
+        library: {
+          chart: {
+            height: 400,
+          },
+          plotOptions: {
+            series: {
+              animation: false,
+              lineWidth: 4
+            }
+          },
+          yAxis: {
+            labels: {
+              style: {
+                fontSize: "16px",
+                color:"#00ff00"
+              }
+            },
+            gridLineDashStyle: "shortdot",
+            gridLineWidth: 1,
+            gridLineColor: "#444444",
+            tickAmount: 5
+          },
+          xAxis: {
+            type: "datetime",
+            labels: {
+              style: {
+                fontSize: "16px",
+                color: "#000000"
+              }
+            },
+            lineWidth: 0,
+            gridLineDashStyle: "dot",
+            tickWidth: 1,
+            tickLength: 0,
+            gridLineWidth: 1,
+            gridLineColor: "#444444",
+            tickPixelInterval: 120
+          }
+        }
+      }
+    );
+  };
+
+  // Ensure your chart loads before plugin render is generated
+  if ("Chartkick" in window) {
+    createChart();
+  } else {
+    window.addEventListener("chartkick:load", createChart, true);
+  }
+</script>
