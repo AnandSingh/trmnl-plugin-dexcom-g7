@@ -105,7 +105,7 @@ def fetch_entries_in_range(minutes_back=60, count=24):
 def get_live_glucose_data():
     try:
         # Simulating the live data fetch - replace this with your actual function
-        readings = fetch_entries_in_range(1440, 288)
+        readings = fetch_entries_in_range(60, 24)
         
         if not readings:
             print("⚠️ No glucose data in time range.")
