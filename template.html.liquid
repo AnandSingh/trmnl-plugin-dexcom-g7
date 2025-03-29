@@ -1,60 +1,56 @@
 <style>
-  .glucose-card {
-    font-family: monospace;
+  .glucose-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 1rem;
-    border-radius: 8px;
-    background-color: #111;
-    color: #0f0;
-    box-shadow: 0 0 10px #0f0;
-  }
-
-  .glucose-header {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-    color: #fff;
+    color: #0ff;
+    font-family: monospace;
   }
 
   .glucose-value {
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: bold;
   }
 
-  .glucose-chart {
-    font-family: monospace;
-    font-size: 1.5rem;
-    margin-top: 1rem;
-    color: #0ff;
+  .glucose-trend {
+    margin-top: 0.5rem;
+    font-size: 1.2rem;
   }
 
   .glucose-time {
-    font-size: 0.9rem;
     margin-top: 0.5rem;
-    color: #aaa;
+    font-size: 0.9rem;
+    color: #888;
   }
 
-  .glucose-status {
-    margin-top: 0.5rem;
-    font-size: 1rem;
+  .glucose-chart {
+    margin-top: 1rem;
+    font-family: monospace;
+    font-size: 1.3rem;
+    color: #0ff;
+    width: 100%;
+    text-align: center;
+    word-wrap: break-word;
   }
 </style>
 
-<div class="glucose-card">
-  <div class="glucose-header">Dexcom G7 Glucose</div>
-
+<div class="glucose-container">
+  <!-- Top Section: Latest Reading -->
   <div class="glucose-value">
-    🩸 {{ glucose }} mg/dL
+    🩸 {{ data.glucose }} mg/dL
   </div>
 
-  <div class="glucose-status">
-    {{ trend }}
-  </div>
-
-  <div class="glucose-chart">
-    {{ chart }}
+  <div class="glucose-trend">
+    {{ data.trend }}
   </div>
 
   <div class="glucose-time">
-    🕒 Last updated: {{ time }}
+    🕒 Last updated: {{ data.time }}
+  </div>
+
+  <!-- Bottom Section: Graph -->
+  <div class="glucose-chart">
+    {{ data.chart }}
   </div>
 </div>
-

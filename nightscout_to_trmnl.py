@@ -8,6 +8,8 @@ import json
 from mock_data import *
 
 load_dotenv()
+print(f"RAW ENV: {os.getenv('USE_MOCK_DATA')}")
+print(f"LOWERCASE ENV: {os.getenv('USE_MOCK_DATA').strip().lower()}")
 
 TRMNL_API_KEY = os.getenv("TRMNL_API_KEY")
 TRMNL_PLUGIN_ID = os.getenv("TRMNL_PLUGIN_ID")
@@ -102,22 +104,15 @@ def send_data():
         print("❌ Missing TRMNL_API_KEY or TRMNL_PLUGIN_ID")
         return
 
-    if is_mock_mode():
-            # Generate sample mock data
+    if True:#is_mock_mode():
+        # Generate sample mock data
         mock_data = generate_mock_data(entries=10)
-        latest_entry = mock_data[-1]  # Use the most recent reading
-
-        # Prepare the data to send to TRMNL
-        trmnl_data = {
-            "glucose": latest_entry["sgv"],
-            "trend": get_trend_arrow(latest_entry["direction"]),
-            "time": latest_entry["dateString"],
-            "chart": generate_chart(mock_data)
-        }
+        trmnl_data = prepare_data_for_trmnl(mock_data)
         print("🧪 Mock mode enabled")
     else:
         trmnl_data = print_filtered_glucose_data()
         print("🌐 Live mode (Dexcom API) enabled")
+
 
     payload = {
         "merge_variables": trmnl_data
@@ -129,12 +124,14 @@ def send_data():
         "Content-Type": "application/json"
     }
 
-    try:
+    try: 
+        print(payload)
         response = requests.post(url, json=payload, headers=headers)
         print(f"✅ Sent to TRMNL ({response.status_code}):", response.text)
     except Exception as e:
         print("❌ Error sending data to TRMNL:", e)
 
 if __name__ == "__main__":
+
     send_data()
 
