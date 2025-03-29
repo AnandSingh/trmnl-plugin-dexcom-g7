@@ -4,10 +4,9 @@ import hashlib
 import requests
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
-import json
-from mock_data import *
 
 load_dotenv()
+
 
 TRMNL_API_KEY = os.getenv("TRMNL_API_KEY")
 TRMNL_PLUGIN_ID = os.getenv("TRMNL_PLUGIN_ID")
@@ -15,12 +14,6 @@ USE_MOCK_DATA = os.getenv("USE_MOCK_DATA", "true").lower() == "true"
 NIGHTSCOUT_URL = os.getenv("NIGHTSCOUT_URL")
 NIGHTSCOUT_API_SECRET = os.getenv("NIGHTSCOUT_API_SECRET", "")
 USE_HASHED_SECRET = True  # replicate behavior of firmware
-
-def is_mock_mode():
-    """Returns True only if USE_MOCK_DATA is explicitly true/yes/1; otherwise defaults to live."""
-    val = os.getenv("USE_MOCK_DATA", "").strip().lower()
-    return val in ("1", "true", "yes")
-
 
 def sha1_hash(value: str) -> str:
     return hashlib.sha1(value.encode('utf-8')).hexdigest()
@@ -75,7 +68,7 @@ def print_filtered_glucose_data():
         if not readings:
             print("⚠️ No glucose data in time range.")
             return
-        print( json.dumps(readings, indent=4))
+        print(readings)
         latest = readings[0]
         sgv = latest["sgv"]
         direction = latest.get("direction", "Unknown")
@@ -97,30 +90,23 @@ def print_filtered_glucose_data():
     except Exception as e:
         print(f"❌ Error: {e}")
 
+if __name__ == "__main__":
+    print_filtered_glucose_data()
+
 def send_data():
     if not TRMNL_API_KEY or not TRMNL_PLUGIN_ID:
         print("❌ Missing TRMNL_API_KEY or TRMNL_PLUGIN_ID")
         return
 
     if is_mock_mode():
-            # Generate sample mock data
-        mock_data = generate_mock_data(entries=10)
-        latest_entry = mock_data[-1]  # Use the most recent reading
-
-        # Prepare the data to send to TRMNL
-        trmnl_data = {
-            "glucose": latest_entry["sgv"],
-            "trend": get_trend_arrow(latest_entry["direction"]),
-            "time": latest_entry["dateString"],
-            "chart": generate_chart(mock_data)
-        }
+        data = generate_mock_data()
         print("🧪 Mock mode enabled")
     else:
-        trmnl_data = print_filtered_glucose_data()
+        data = print_filtered_glucose_data()
         print("🌐 Live mode (Dexcom API) enabled")
 
     payload = {
-        "merge_variables": trmnl_data
+        "merge_variables": data
     }
 
     url = f"https://usetrmnl.com/api/custom_plugins/{TRMNL_PLUGIN_ID}"
@@ -130,11 +116,10 @@ def send_data():
     }
 
     try:
-        response = requests.post(url, json=payload, headers=headers)
+        response = requests.post(url, data=json.dumps(payload), headers=headers)
         print(f"✅ Sent to TRMNL ({response.status_code}):", response.text)
     except Exception as e:
         print("❌ Error sending data to TRMNL:", e)
 
 if __name__ == "__main__":
     send_data()
-
