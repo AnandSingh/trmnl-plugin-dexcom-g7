@@ -25,6 +25,6 @@ jobs:
           TRMNL_API_KEY: ${{ secrets.TRMNL_API_KEY }}
           TRMNL_PLUGIN_ID: ${{ secrets.TRMNL_PLUGIN_ID }}
         run: |
-          echo "USE_MOCK_DATA=true" > .env
-          python dexcom_to_trmnl.py
+          echo "USE_MOCK_DATA=false" > .env
+          python nightscout_to_trmnl.py
 
