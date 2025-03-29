@@ -36,6 +36,21 @@ def build_headers():
         headers["api-secret"] = secret
     return headers
 
+
+def get_trend_arrow(direction: str) -> str:
+    arrows = {
+        "DoubleUp": "⏫ Double Up",
+        "SingleUp": "🔼 Rising",
+        "FortyFiveUp": "↗️ Slight Rise",
+        "Flat": "➡️ Flat",
+        "FortyFiveDown": "↘️ Slight Drop",
+        "SingleDown": "🔽 Falling",
+        "DoubleDown": "⏬ Rapid Drop",
+        "NONE": "⚪ No Trend",
+    }
+    return arrows.get(direction, f"❓ {direction}")
+
+
 def fetch_sgv_values(params=None):
     if not NIGHTSCOUT_URL:
         raise Exception("❌ NIGHTSCOUT_URL is not set")
@@ -71,30 +86,34 @@ def fetch_entries_in_range(minutes_back=60, count=24):
     print(response)
     return response.json()
 
-def print_filtered_glucose_data():
+def get_live_glucose_data():
     try:
-        readings = fetch_entries_in_range(60, 24)
+        # Simulating the live data fetch - replace this with your actual function
+        readings = fetch_entries_in_range(1440, 288)
+        
         if not readings:
             print("⚠️ No glucose data in time range.")
             return
-        print( json.dumps(readings, indent=4))
+        
         latest = readings[0]
         sgv = latest["sgv"]
         direction = latest.get("direction", "Unknown")
-        timestamp = latest.get("dateString", datetime.utcnow().isoformat())
-
-        print(f"🩸 BG: {sgv} mg/dL")
-        print(f"➡️ Trend: {direction}")
-        print(f"🕒 Time: {timestamp}")
-
+        timestamp = latest.get("dateString", datetime.now(timezone.utc).isoformat())
+        
+        # Generate chart data
         values = [r["sgv"] for r in readings if "sgv" in r][:24]
-        chart_blocks = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█']
-        min_val = min(values)
-        max_val = max(values)
-        range_val = max_val - min_val or 1
-        chart = ''.join([chart_blocks[int((v - min_val) / range_val * (len(chart_blocks) - 1))] for v in values])
+        timestamps = [r["dateString"][:16] for r in readings if "dateString" in r][:24]
+        chart_data = [[timestamps[i], values[i]] for i in range(len(values))]
 
-        print(f"📈 Chart: {chart}")
+        # Prepare data in the format your template expects
+        trmnl_data = {
+            "glucose": sgv,
+            "trend": get_trend_arrow(direction),
+            "time": timestamp,
+            "chart_data": chart_data
+        }
+
+        return trmnl_data
 
     except Exception as e:
         print(f"❌ Error: {e}")
@@ -104,13 +123,13 @@ def send_data():
         print("❌ Missing TRMNL_API_KEY or TRMNL_PLUGIN_ID")
         return
 
-    if True:#is_mock_mode():
+    if is_mock_mode():
         # Generate sample mock data
-        mock_data = generate_mock_data(entries=10)
+        mock_data = generate_mock_data(entries=255)
         trmnl_data = prepare_data_for_trmnl(mock_data)
         print("🧪 Mock mode enabled")
     else:
-        trmnl_data = print_filtered_glucose_data()
+        trmnl_data = get_live_glucose_data()
         print("🌐 Live mode (Dexcom API) enabled")
 
 
@@ -132,6 +151,7 @@ def send_data():
         print("❌ Error sending data to TRMNL:", e)
 
 if __name__ == "__main__":
-
+    #data = get_live_glucose_data()
+    #print(data)
     send_data()
 

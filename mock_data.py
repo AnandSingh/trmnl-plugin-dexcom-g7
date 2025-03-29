@@ -42,15 +42,17 @@ def get_trend_arrow(direction: str) -> str:
 def prepare_data_for_trmnl(mock_data):
     """Prepare data to be sent to TRMNL."""
     latest_entry = mock_data[-1]  # Use the most recent reading
-    labels = [entry["dateString"][11:16] for entry in mock_data]  # Extract only the HH:MM part
-    glucose_values = [entry["sgv"] for entry in mock_data]
+    
+    # Preparing data for Chartkick (Pairs of labels and values)
+    chart_data = [
+        [entry["dateString"][11:16], entry["sgv"]] for entry in mock_data
+    ]
 
     trmnl_data = {
         "glucose": latest_entry["sgv"],
         "trend": get_trend_arrow(latest_entry["direction"]),
         "time": latest_entry["dateString"],
-        "chart_labels": labels,
-        "chart_data": glucose_values
+        "chart_data": chart_data
     }
     return trmnl_data
 
@@ -80,7 +82,7 @@ def send_to_trmnl(trmnl_data):
 
 def test():
     # Generate sample mock data
-    mock_data = generate_mock_data(entries=10)
+    mock_data = generate_mock_data(entries=255)
     trmnl_data = prepare_data_for_trmnl(mock_data)
     
     # Display data locally for testing
