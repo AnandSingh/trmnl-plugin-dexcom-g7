@@ -1,4 +1,4 @@
-# Dexcom G7 Plugin for TRMNL 🩸
+#  TRMNL Plugin - Dexcom G7 Continuous Glucose Monitoring (CGM) 🩸
 
 This plugin displays real-time or mock Dexcom G7 glucose data in your [TRMNL](https://usetrmnl.com) dashboard using their **Custom Plugin API** and webhook strategy.
 
@@ -7,24 +7,11 @@ This plugin displays real-time or mock Dexcom G7 glucose data in your [TRMNL](ht
 </p>
 
 It supports:
-- ✅ Real-time glucose readings via Dexcom Share API (planned)
-- ✅ Fully offline mock mode for development & testing
-- ✅ ASCII 24-hour glucose chart (auto-generated)
-- ✅ Python or TypeScript-based data push
-- ✅ Liquid/HTML dashboard rendering
-
----
-
-## 📦 Project Structure
-
-```
-trmnl-plugin-dexcom-g7/
-├── main.ts                 # Webhook sender using TypeScript + axios
-├── send_to_trmnl.py        # Python version of the webhook sender
-├── template.html.liquid    # Renders dashboard display
-├── .env.example            # API keys and config
-├── README.md
-```
+- 🔍 **Live Data Fetching** from a Nightscout server.
+- 📊 **Dynamic Chart Rendering** using Highcharts and Chartkick.
+- 🚦 **Trend Arrows** indicating glucose direction (e.g., Rising, Falling, Flat).
+- 💡 **Mock Data Support** for offline testing and development.
+- 🔒 **Secure API Communication** with API Key handling.
 
 ---
 
@@ -35,12 +22,13 @@ trmnl-plugin-dexcom-g7/
 ```bash
 git clone https://github.com/YOUR_USERNAME/trmnl-plugin-dexcom-g7.git
 cd trmnl-plugin-dexcom-g7
-npm install
 ```
 
-Install Python deps (if using Python):
+Install Python deps:
 
 ```bash
+python3 -m venv venv
+source venv/bin/activate   # On Windows: .\venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
@@ -52,14 +40,15 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Then add:
+Then update in the .env:
 
 ```
-TRMNL_API_KEY=your_actual_trmnl_api_key
-TRMNL_PLUGIN_ID=your_plugin_id_from_trmnl
-USE_MOCK_DATA=true
+TRMNL_API_KEY=your_trmnl_api_key
+TRMNL_PLUGIN_ID=your_plugin_id
+NIGHTSCOUT_URL=https://your-nightscout-server-url
+NIGHTSCOUT_API_SECRET=your_api_secret
+USE_MOCK_DATA=true  # Set to true to use mock data, false for live data
 ```
-
 ---
 
 ### 3. Add the Dashboard Template
@@ -74,49 +63,39 @@ In your [TRMNL dashboard](https://usetrmnl.com):
 
 ### 4. Send Data (Choose one)
 
-#### Option A: TypeScript
 
 ```bash
-npx ts-node main.ts
-```
-
-#### Option B: Python
-
-```bash
-python send_to_trmnl.py
+python nightscout_to_trmnl.py
 ```
 
 ---
 
-### ✅ Output in TRMNL
-
-```
-🩸 Glucose: 145 mg/dL
-📈 Chart: ▂▃▄▅▆▇█▇▆▅▄▃▂▁▂▃▅▆
-🕒 Time: 2025-03-24 23:45:00
-Status: 🟢 Normal
-```
-
----
 
 ## 🔮 Future Features
 
-- [ ] Dexcom Share live API integration
-- [ ] Auto-push when new data is available
-- [ ] Trend arrows (↗️, ↘️, ➖)
-- [ ] Alert logic for high/low readings
-- [ ] GitHub Action-based cron trigger
-- [ ] Device association from TRMNL dashboard
-- [ ] ASCII + Unicode graph visual options
+- [ ]  Add Dexcom Share API integration.
+- [ ] Add logging or status history in the dashboard template.
 
 ---
 
 ## 🧪 Development Mode
 
-Keep `USE_MOCK_DATA=true` to develop without hitting the Dexcom API.
+Keep `USE_MOCK_DATA=true` to develop without hitting the nightscout API.
 
 ---
 
+## giuthub workflow setup
+Go to your repository Settings > Secrets and variables > Actions > New secret and add the following secrets:
+
+- TRMNL_API_KEY - Your TRMNL API Key
+- TRMNL_PLUGIN_ID - Your TRMNL Plugin ID
+- NIGHTSCOUT_URL - Your Nightscout URL (e.g., https://your-nightscout-server-url)
+- NIGHTSCOUT_API_SECRET - Your Nightscout API Secret
+
+### Trigger the Workflow
+- The workflow will run automatically every 15 minutes.
+- You can also trigger it manually from the Actions tab in your repository.
+
 ## 📄 License
 
-MIT © 2025 Your Name
+MIT © 2025 Anand Singh
