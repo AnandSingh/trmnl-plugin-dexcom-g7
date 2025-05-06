@@ -14,7 +14,9 @@
       <div class="item">
         <div class="meta"></div>
         <div class="content">
-          <span class="label" style="color: #333; font-size: 0.9rem;">🕒 {{ time }}</span>
+          <span class="label" style="color: #333; font-size: 0.9rem;">
+             <i class="ti ti-clock"></i> {{ time }}
+          </span>
           <span class="label">Last updated</span>
         </div>
       </div>
@@ -45,6 +47,10 @@
 
 <script type="text/javascript">
   var data = {{ chart_data | json | safe }};
+
+  // Extract the earliest and latest timestamps from the data
+  var minTimestamp = data.length > 0 ? new Date(data[0][0]).getTime() : new Date().getTime() - 24 * 60 * 60 * 1000; // Default to 24 hours ago
+  var maxTimestamp = data.length > 0 ? new Date(data[data.length - 1][0]).getTime() : new Date().getTime(); // Default to current time
 
   // Recommended configs to achieve the TRMNL Framework aesthetic
   var createChart = function() {
@@ -96,6 +102,8 @@
           },
           xAxis: {
             type: "datetime",
+            min: minTimestamp, // Use the earliest reading's timestamp
+            max: maxTimestamp, // Use the latest reading's timestamp
             labels: {
               style: {
                 fontSize: "16px",
