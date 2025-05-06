@@ -146,7 +146,7 @@ def send_data():
         print("Mock mode enabled")
     else:
         trmnl_data = get_live_glucose_data()
-        print("Live mode (Dexcom API) enabled")
+        print("Live mode (nightschout API) enabled")
 
 
     payload = {
@@ -160,7 +160,7 @@ def send_data():
     }
 
     try: 
-        print(payload)
+        #print(payload)
         response = requests.post(url, json=payload, headers=headers)
         print(f"Sent to TRMNL ({response.status_code}):", response.text)
     except Exception as e:
