@@ -64,12 +64,12 @@ def get_trend_arrow(direction: str) -> str:
     "DoubleDown": '<i class="ti ti-arrow-big-down-lines"></i> Rapid Drop',
     "NONE": '<i class="ti ti-circle"></i> No Trend',
     }
-    return arrows.get(direction, f"❓ {direction}")
+    return arrows.get(direction, f'<i class="ti ti-help"></i> {direction}')
 
 
 def fetch_sgv_values(params=None):
     if not NIGHTSCOUT_URL:
-        raise Exception("❌ NIGHTSCOUT_URL is not set")
+        raise Exception("Error: NIGHTSCOUT_URL is not set")
 
     url = f"{NIGHTSCOUT_URL.rstrip('/')}/api/v1/entries/sgv.json"
 
@@ -77,14 +77,14 @@ def fetch_sgv_values(params=None):
     response = requests.get(url, headers=build_headers(), allow_redirects=True)
 
     if response.status_code != 200:
-        raise Exception(f"Nightscout API error {response.status_code}: {response.text}")
+        raise Exception(f"Error: Nightscout API error {response.status_code}: {response.text}")
     print(response)
     return response.json()
 
 
 def fetch_entries_in_range(minutes_back=60, count=24):
     if not NIGHTSCOUT_URL:
-        raise Exception("❌ NIGHTSCOUT_URL is not set")
+        raise Exception("Error:: NIGHTSCOUT_URL is not set")
     to_epoch = int(time.time() * 1000)
     from_epoch = to_epoch - (minutes_back * 60 * 1000)
 
@@ -108,7 +108,7 @@ def get_live_glucose_data():
         readings = fetch_entries_in_range(60, 24)
         
         if not readings:
-            print("⚠️ No glucose data in time range.")
+            print("No glucose data in time range !!")
             return
         
         latest = readings[0]
@@ -132,21 +132,21 @@ def get_live_glucose_data():
         return trmnl_data
 
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
 
 def send_data():
     if not TRMNL_API_KEY or not TRMNL_PLUGIN_ID:
-        print("❌ Missing TRMNL_API_KEY or TRMNL_PLUGIN_ID")
+        print("Error: Missing TRMNL_API_KEY or TRMNL_PLUGIN_ID")
         return
 
     if is_mock_mode():
         # Generate sample mock data
         mock_data = generate_mock_data(entries=255)
         trmnl_data = prepare_data_for_trmnl(mock_data)
-        print("🧪 Mock mode enabled")
+        print("Mock mode enabled")
     else:
         trmnl_data = get_live_glucose_data()
-        print("🌐 Live mode (Dexcom API) enabled")
+        print("Live mode (Dexcom API) enabled")
 
 
     payload = {
@@ -162,9 +162,9 @@ def send_data():
     try: 
         print(payload)
         response = requests.post(url, json=payload, headers=headers)
-        print(f"✅ Sent to TRMNL ({response.status_code}):", response.text)
+        print(f"Sent to TRMNL ({response.status_code}):", response.text)
     except Exception as e:
-        print("❌ Error sending data to TRMNL:", e)
+        print("Error: sending data to TRMNL:", e)
 
 if __name__ == "__main__":
     #data = get_live_glucose_data()

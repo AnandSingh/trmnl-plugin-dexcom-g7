@@ -28,16 +28,16 @@ def generate_mock_data(entries=10):
 
 def get_trend_arrow(direction: str) -> str:
     arrows = {
-        "DoubleUp": "⏫ Double Up",
-        "SingleUp": "🔼 Rising",
-        "FortyFiveUp": "↗️ Slight Rise",
-        "Flat": "➡️ Flat",
-        "FortyFiveDown": "↘️ Slight Drop",
-        "SingleDown": "🔽 Falling",
-        "DoubleDown": "⏬ Rapid Drop",
-        "NONE": "⚪ No Trend",
+        "DoubleUp": '<i class="ti ti-arrow-big-up-lines"></i> Double Up',
+        "SingleUp": '<i class="ti ti-arrow-big-up"></i> Rising',
+        "FortyFiveUp": '<i class="ti ti-arrow-up-right"></i> Slight Rise',
+        "Flat": '<i class="ti ti-arrow-right"></i> Flat',
+        "FortyFiveDown": '<i class="ti ti-arrow-down-right"></i> Slight Drop',
+        "SingleDown": '<i class="ti ti-arrow-big-down"></i> Falling',
+        "DoubleDown": '<i class="ti ti-arrow-big-down-lines"></i> Rapid Drop',
+        "NONE": '<i class="ti ti-circle"></i> No Trend',
     }
-    return arrows.get(direction, f"❓ {direction}")
+    return arrows.get(direction, f'<i class="ti ti-help"></i> {direction}')
 
 def prepare_data_for_trmnl(mock_data):
     """Prepare data to be sent to TRMNL."""
@@ -61,7 +61,7 @@ def send_to_trmnl(trmnl_data):
     TRMNL_PLUGIN_ID = os.getenv("TRMNL_PLUGIN_ID")
 
     if not TRMNL_API_KEY or not TRMNL_PLUGIN_ID:
-        print("❌ Missing TRMNL_API_KEY or TRMNL_PLUGIN_ID")
+        print("Error: Missing TRMNL_API_KEY or TRMNL_PLUGIN_ID")
         return
 
     url = f"https://usetrmnl.com/api/custom_plugins/{TRMNL_PLUGIN_ID}"
@@ -74,11 +74,11 @@ def send_to_trmnl(trmnl_data):
     try:
         response = requests.post(url, json=payload, headers=headers)
         if response.status_code == 200:
-            print(f"✅ Sent to TRMNL ({response.status_code}):", response.text)
+            print(f"Sent to TRMNL ({response.status_code}):", response.text)
         else:
-            print(f"❌ Error sending data to TRMNL ({response.status_code}):", response.text)
+            print(f"Error: sending data to TRMNL ({response.status_code}):", response.text)
     except Exception as e:
-        print("❌ Error sending data to TRMNL:", e)
+        print("Error: sending data to TRMNL:", e)
 
 def test():
     # Generate sample mock data
