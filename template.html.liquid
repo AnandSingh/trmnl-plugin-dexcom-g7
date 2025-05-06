@@ -129,4 +129,52 @@
   } else {
     window.addEventListener("chartkick:load", createChart, true);
   }
+
+  // Function to update the chart with new data
+  function updateChart(newDataPoint) {
+    // Append the new data point to the existing data
+    data.push(newDataPoint);
+
+    // Re-render the chart with the updated data
+    new Chartkick["LineChart"](
+      "glucose-chart",
+      data,
+      {
+        adapter: "highcharts",
+        library: {
+          xAxis: {
+            type: "datetime",
+            labels: {
+              style: {
+                fontSize: "16px",
+                color: "#000000"
+              }
+            }
+          },
+          yAxis: {
+            min: 0,
+            max: 400,
+            labels: {
+              style: {
+                fontSize: "18px",
+                color: "#ff0000"
+              }
+            }
+          }
+        }
+      }
+    );
+  }
+
+  // Simulate receiving new data from the backend
+  function fetchNewData() {
+    // Example of a new data point (replace this with an actual API call)
+    var newDataPoint = ["2025-05-06T06:36", 84];
+
+    // Update the chart with the new data point
+    updateChart(newDataPoint);
+  }
+
+  // Fetch new data every 5 minutes (300,000 milliseconds)
+  setInterval(fetchNewData, 300000);
 </script>

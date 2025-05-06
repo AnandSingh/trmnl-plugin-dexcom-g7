@@ -104,11 +104,11 @@ def fetch_entries_in_range(minutes_back=60, count=24):
 
 def get_live_glucose_data():
     try:
-        # Fetch data for the last 24 hours (1440 minutes)
-        readings = fetch_entries_in_range(1440, 288)  # 288 entries = 1 every 5 minutes for 24 hours
+        # Fetch the latest data point (1 entry)
+        readings = fetch_entries_in_range(5, 1)  # Fetch the most recent entry (last 5 minutes)
         
         if not readings:
-            print("No glucose data in time range !!")
+            print("No glucose data available!")
             return
         
         latest = readings[0]
@@ -116,17 +116,12 @@ def get_live_glucose_data():
         direction = latest.get("direction", "Unknown")
         timestamp = latest.get("dateString", datetime.now(timezone.utc).isoformat())
         
-        # Generate chart data
-        values = [r["sgv"] for r in readings if "sgv" in r]
-        timestamps = [r["dateString"][:16] for r in readings if "dateString" in r]
-        chart_data = [[timestamps[i], values[i]] for i in range(len(values))]
-    
-        # Prepare data in the format your template expects
+        # Prepare data for the frontend
         trmnl_data = {
             "glucose": sgv,
             "trend": get_trend_arrow(direction),
             "time": format_timestamp(timestamp),
-            "chart_data": chart_data
+            "chart_data": [[timestamp[:16], sgv]]  # Send only the latest data point
         }
 
         return trmnl_data
