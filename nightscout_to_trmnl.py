@@ -104,8 +104,8 @@ def fetch_entries_in_range(minutes_back=60, count=24):
 
 def get_live_glucose_data():
     try:
-        # Simulating the live data fetch - replace this with your actual function
-        readings = fetch_entries_in_range(60, 24)
+        # Fetch data for the last 24 hours (1440 minutes)
+        readings = fetch_entries_in_range(1440, 288)  # 288 entries = 1 every 5 minutes for 24 hours
         
         if not readings:
             print("No glucose data in time range !!")
@@ -117,8 +117,8 @@ def get_live_glucose_data():
         timestamp = latest.get("dateString", datetime.now(timezone.utc).isoformat())
         
         # Generate chart data
-        values = [r["sgv"] for r in readings if "sgv" in r][:24]
-        timestamps = [r["dateString"][:16] for r in readings if "dateString" in r][:24]
+        values = [r["sgv"] for r in readings if "sgv" in r]
+        timestamps = [r["dateString"][:16] for r in readings if "dateString" in r]
         chart_data = [[timestamps[i], values[i]] for i in range(len(values))]
     
         # Prepare data in the format your template expects
