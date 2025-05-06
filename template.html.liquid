@@ -2,6 +2,9 @@
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartkick@5.0.1/dist/chartkick.min.js"></script>
 
+<!-- Add Tabler Icons stylesheet -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.30.0/dist/tabler-icons.min.css" />
+
 <!-- Markup with empty, ID'd element for chart injection -->
 <div class="view view--full">
   <div class="layout layout--col gap--space-between">
@@ -17,12 +20,14 @@
       </div>
       <div class="item" style="text-align: center;">
         <div class="content">
-          <span class="value value--tnums" style="font-size: 2rem; color: #ff0000;">🩸 {{ glucose }} mg/dL</span><br>
+          <span class="value value--tnums" style="font-size: 2rem; color: #ff0000;">
+            <i class="ti ti-droplet"></i> {{ glucose }} mg/dL
+          </span><br>
         </div>
       </div>
       <div class="item" style="text-align: center;">
         <div class="content">
-          <span class="value value--tnums" style="font-size: 2rem; color: #444;">{{ trend }}</span>
+          <span class="value value--tnums" style="font-size: 2rem; color: #444;">{{ trend | safe }}</span>
         </div>
       </div>
     </div>
@@ -64,6 +69,18 @@
             }
           },
           yAxis: {
+             plotBands: [{
+              from: 80,
+              to: 180,
+              color: "#9999", // Light gray background for time-in-range zone
+              label: {
+                text: 'Time In Range (80 - 180)',
+                style: {
+                  color: '#88',
+                  fontSize: '12px'
+                }
+              }
+            }],
             labels: {
               style: {
                 fontSize: "18px",
