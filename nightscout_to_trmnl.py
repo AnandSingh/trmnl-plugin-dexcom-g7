@@ -55,14 +55,14 @@ def format_timestamp(iso_timestamp: str) -> str:
 
 def get_trend_arrow(direction: str) -> str:
     arrows = {
-        "DoubleUp": "⏫ Double Up",
-        "SingleUp": "🔼 Rising",
-        "FortyFiveUp": "↗️ Slight Rise",
-        "Flat": "➡️ Flat",
-        "FortyFiveDown": "↘️ Slight Drop",
-        "SingleDown": "🔽 Falling",
-        "DoubleDown": "⏬ Rapid Drop",
-        "NONE": "⚪ No Trend",
+    "DoubleUp": '<i class="ti ti-arrow-big-up-lines"></i> Double Up',
+    "SingleUp": '<i class="ti ti-arrow-big-up"></i> Rising',
+    "FortyFiveUp": '<i class="ti ti-arrow-up-right"></i> Slight Rise',
+    "Flat": '<i class="ti ti-arrow-right"></i> Flat',
+    "FortyFiveDown": '<i class="ti ti-arrow-down-right"></i> Slight Drop',
+    "SingleDown": '<i class="ti ti-arrow-big-down"></i> Falling',
+    "DoubleDown": '<i class="ti ti-arrow-big-down-lines"></i> Rapid Drop',
+    "NONE": '<i class="ti ti-circle"></i> No Trend',
     }
     return arrows.get(direction, f"❓ {direction}")
 
